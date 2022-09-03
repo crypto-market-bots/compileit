@@ -10,18 +10,18 @@ def save_code(file_code, extension, code_source):
     
 def delete_files(file_code, ext):
     try:
-        os.remove(file_code+".txt")
         os.remove(file_code+ext)
+        os.remove(file_code+".txt")
     except:
         return 
 
 def check_error(file_code):
-    error_file = ''
+    error_file = file_code
     with open(error_file) as f:
         lines = f.readlines()
     return "".join(lines)
 
-def compile_code_cpp(code_source):
+def compile_code_cpp(code_source, stdin):
     file_code = "../tmp/"+str(uuid.uuid4())
     save_code(file_code, ".cpp", code_source)
 
@@ -39,9 +39,10 @@ def compile_code_cpp(code_source):
 
         cmd = ['./a.out']
         proc = subprocess.Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
-        #(stdout, stderr) = proc.communicate()
+        if stdin != '':
+            proc.communicate(stdin)
         delete_files(file_code, ".cpp")
-        return proc.stdout.read()
+        return proc.stderr if proc.stderr != None else proc.stdout.read() 
 
     except Exception as e:
         delete_files(file_code, ".cpp")
