@@ -18,9 +18,12 @@ def compile_code_python(code_source, stdin):
     # delete_files(file_code)
     p.wait()
     result = p.stderr if p.stderr != None else p.stdout.read()
+
+    if p.stderr == None:
+        print(result)
     container = str(result).replace(file_code+".py", '')
     if p.stderr:
         container.pop(0)
 
     cpp.delete_files(file_code, ".py")
-    return "".join(container)
+    return result.decode('utf-8')
